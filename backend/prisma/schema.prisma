@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  cellId    String     @unique
+  password  String
+  name      String
+  role      String     @default("leader") // "admin" or "leader"
+  cellGroup CellGroup?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CellGroup {
+  id        Int      @id @default(autoincrement())
+  name      String
+  leaderId  Int      @unique
+  leader    User     @relation(fields: [leaderId], references: [id], onDelete: Cascade)
+  members   Member[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Member {
+  id            Int            @id @default(autoincrement())
+  name          String
+  cellGroupId   Int
+  cellGroup     CellGroup      @relation(fields: [cellGroupId], references: [id], onDelete: Cascade)
+  isActive      Boolean        @default(true)
+  weeklyReports WeeklyReport[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model WeeklyReport {
+  id                 Int      @id @default(autoincrement())
+  memberId           Int
+  member             Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  weekStart          DateTime
+  isPresent          Boolean  @default(false)
+  bibleChaptersRead  Int      @default(0)
+  prayerCount        Int      @default(0)
+  notes              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([memberId, weekStart])
+}
