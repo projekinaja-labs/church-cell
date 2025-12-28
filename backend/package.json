@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
+    "build": "cd ../frontend && npm install && npm run build",
+    "render-build": "npm install && npx prisma generate && cd ../frontend && npm install && npm run build",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio"
