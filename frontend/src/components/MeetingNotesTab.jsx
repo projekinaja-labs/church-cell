@@ -113,9 +113,14 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
         const weekKey = week.start.toISOString();
         const newEvent = eventInputs[weekKey];
 
-        if (newEvent !== undefined && note) {
-            // Update existing note with new event
-            await onEventSave(note.id, newEvent, null);
+        if (newEvent !== undefined && newEvent.trim() !== '') {
+            if (note) {
+                // Update existing note with new event
+                await onEventSave(note.id, newEvent, null);
+            } else {
+                // Create new note with just the event (use Sunday as weekDate)
+                await onEventSave(null, newEvent, week.sunday.toISOString().split('T')[0]);
+            }
         }
     };
 
@@ -153,26 +158,22 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
                                 <span className="week-dates">{week.label}</span>
                             </div>
                             <div className="week-content">
-                                {hasNote ? (
-                                    <>
-                                        <textarea
-                                            className="week-event-input"
-                                            value={eventValue}
-                                            onChange={(e) => handleEventChange(weekKey, e.target.value)}
-                                            onBlur={() => handleEventBlur(week, note)}
-                                            placeholder={t('meetingNotes.eventPlaceholder')}
-                                            rows={2}
-                                        />
-                                        <div
-                                            className="week-note-link"
-                                            onClick={() => onWeekClick && onWeekClick(note)}
-                                        >
-                                            <FiCheck className="week-check" />
-                                            <span>{note.title}</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <span className="week-empty">{t('meetingNotes.noNote')}</span>
+                                <textarea
+                                    className="week-event-input"
+                                    value={eventValue}
+                                    onChange={(e) => handleEventChange(weekKey, e.target.value)}
+                                    onBlur={() => handleEventBlur(week, note)}
+                                    placeholder={t('meetingNotes.eventPlaceholder')}
+                                    rows={2}
+                                />
+                                {hasNote && (
+                                    <div
+                                        className="week-note-link"
+                                        onClick={() => onWeekClick && onWeekClick(note)}
+                                    >
+                                        <FiCheck className="week-check" />
+                                        <span>{note.title}</span>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -290,9 +291,20 @@ export default function MeetingNotesTab() {
         handleEdit(note);
     };
 
-    const handleEventSave = async (noteId, event) => {
+    const handleEventSave = async (noteId, event, weekDate) => {
         try {
-            await axios.put(`${API_URL}/meeting-notes/${noteId}`, { event });
+            if (noteId) {
+                // Update existing note with new event
+                await axios.put(`${API_URL}/meeting-notes/${noteId}`, { event });
+            } else if (weekDate) {
+                // Create new note with just the event
+                await axios.post(`${API_URL}/meeting-notes`, {
+                    weekDate,
+                    title: event.substring(0, 50) || 'Event',
+                    content: '',
+                    event
+                });
+            }
             fetchNotes();
         } catch (error) {
             console.error('Error saving event:', error);
