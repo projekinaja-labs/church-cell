@@ -163,14 +163,22 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
                                 <span className="week-dates">{week.label}</span>
                             </div>
                             <div className="week-content">
-                                <textarea
-                                    className="week-event-input"
-                                    value={eventValue}
-                                    onChange={(e) => handleEventChange(weekKey, e.target.value)}
-                                    onBlur={() => handleEventBlur(week)}
-                                    placeholder={t('meetingNotes.eventPlaceholder')}
-                                    rows={2}
-                                />
+                                <div className="week-event-row">
+                                    <textarea
+                                        className="week-event-input"
+                                        value={eventValue}
+                                        onChange={(e) => handleEventChange(weekKey, e.target.value)}
+                                        placeholder={t('meetingNotes.eventPlaceholder')}
+                                        rows={2}
+                                    />
+                                    <button
+                                        className="btn btn-sm btn-primary week-event-save"
+                                        onClick={() => handleEventBlur(week)}
+                                        title={t('common.save')}
+                                    >
+                                        <FiSave />
+                                    </button>
+                                </div>
                                 {weekNotes.map(note => (
                                     <div
                                         key={note.id}
@@ -412,7 +420,7 @@ export default function MeetingNotesTab() {
                 </div>
             ) : (
                 <div className="meeting-notes-list mt-xl">
-                    <h3 className="mb-lg">{t('meetingNotes.allNotes')}</h3>
+                    <h3 className="mb-lg mt-xl">{t('meetingNotes.allNotes')}</h3>
                     {notes.map(note => (
                         <div key={note.id} className="card mb-lg">
                             <div className="card-header">

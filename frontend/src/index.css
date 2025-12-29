@@ -1663,3 +1663,21 @@ h4 {
 .week-note-link:hover {
   opacity: 0.8;
 }
+
+/* Week Event Row with Save Button */
+.week-event-row {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: flex-start;
+}
+
+.week-event-row .week-event-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.week-event-save {
+  padding: var(--space-xs) var(--space-sm);
+  min-width: auto;
+  flex-shrink: 0;
+}
