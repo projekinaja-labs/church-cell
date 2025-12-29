@@ -117,14 +117,9 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
         setEventInputs(prev => ({ ...prev, [weekKey]: value }));
     };
 
-    const handleEventBlur = async (week) => {
-        const weekKey = week.start.toISOString();
-        const newEvent = eventInputs[weekKey];
-
-        if (newEvent !== undefined) {
-            // Save event with Sunday date
-            await onEventSave(week.sunday.toISOString().split('T')[0], newEvent);
-        }
+    const handleSaveEvent = async (week, eventValue) => {
+        // Save event with Sunday date
+        await onEventSave(week.sunday.toISOString().split('T')[0], eventValue || '');
     };
 
     return (
@@ -173,7 +168,7 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
                                     />
                                     <button
                                         className="btn btn-sm btn-primary week-event-save"
-                                        onClick={() => handleEventBlur(week)}
+                                        onClick={() => handleSaveEvent(week, eventValue)}
                                         title={t('common.save')}
                                     >
                                         <FiSave />
