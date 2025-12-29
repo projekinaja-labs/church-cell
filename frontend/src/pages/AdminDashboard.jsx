@@ -488,7 +488,7 @@ function ReportsTab() {
                     <div key={week} className="card mb-lg">
                         <h3 className="card-title mb-md">{t('reports.weekOf')} {week}</h3>
                         <div className="table-container">
-                            <table className="table">
+                            <table className="table" style={{ minWidth: '800px' }}>
                                 <thead>
                                     <tr>
                                         <th>{t('table.cellGroup')}</th>
@@ -496,7 +496,7 @@ function ReportsTab() {
                                         <th>{t('common.present')}</th>
                                         <th>{t('reports.bibleChapters')}</th>
                                         <th>{t('reports.prayers')}</th>
-                                        <th>{t('reports.notes')}</th>
+                                        <th style={{ minWidth: '200px' }}>{t('reports.notes')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -511,7 +511,7 @@ function ReportsTab() {
                                             </td>
                                             <td>{report.bibleChaptersRead}</td>
                                             <td>{report.prayerCount}</td>
-                                            <td>{report.notes || '-'}</td>
+                                            <td style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{report.notes || '-'}</td>
                                         </tr>
                                     ))}
                                 </tbody>

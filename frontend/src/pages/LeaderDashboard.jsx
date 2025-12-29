@@ -238,8 +238,8 @@ function WeeklyReportForm() {
                         <p>{t('members.addFirstMember')}</p>
                     </div>
                 ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table className="table">
+                    <div className="table-container">
+                        <table className="table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
                                     <th>{t('reports.member')}</th>
@@ -284,13 +284,14 @@ function WeeklyReportForm() {
                                                 placeholder="0"
                                             />
                                         </td>
-                                        <td>
-                                            <input
-                                                type="text"
+                                        <td style={{ minWidth: '200px' }}>
+                                            <textarea
                                                 className="form-input"
                                                 value={reports[member.id]?.notes || ''}
                                                 onChange={e => handleReportChange(member.id, 'notes', e.target.value)}
                                                 placeholder={t('reports.addNotes')}
+                                                rows={2}
+                                                style={{ resize: 'vertical', minHeight: '60px' }}
                                             />
                                         </td>
                                     </tr>
@@ -391,14 +392,14 @@ function HistoryView() {
                         })}
                     </h3>
                     <div className="table-container">
-                        <table className="table">
+                        <table className="table" style={{ minWidth: '700px' }}>
                             <thead>
                                 <tr>
                                     <th>{t('reports.member')}</th>
                                     <th>{t('common.present')}</th>
                                     <th>{t('reports.bibleChapters')}</th>
                                     <th>{t('reports.prayers')}</th>
-                                    <th>{t('reports.notes')}</th>
+                                    <th style={{ minWidth: '200px' }}>{t('reports.notes')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -412,7 +413,7 @@ function HistoryView() {
                                         </td>
                                         <td>{report.bibleChaptersRead}</td>
                                         <td>{report.prayerCount}</td>
-                                        <td>{report.notes || '-'}</td>
+                                        <td style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{report.notes || '-'}</td>
                                     </tr>
                                 ))}
                             </tbody>
