@@ -118,8 +118,15 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
     };
 
     const handleSaveEvent = async (week, eventValue) => {
+        const weekKey = week.start.toISOString();
         // Save event with Sunday date
         await onEventSave(week.sunday.toISOString().split('T')[0], eventValue || '');
+        // Clear local edit state so UI shows saved value from server
+        setEventInputs(prev => {
+            const newState = { ...prev };
+            delete newState[weekKey];
+            return newState;
+        });
     };
 
     return (
@@ -326,9 +333,10 @@ export default function MeetingNotesTab() {
     const handleEventSave = async (weekDate, event) => {
         try {
             await axios.post(`${API_URL}/week-events`, { weekDate, event });
-            fetchWeekEvents();
+            await fetchWeekEvents();
         } catch (error) {
             console.error('Error saving event:', error);
+            alert('Failed to save event: ' + (error.response?.data?.error || error.message));
         }
     };
 
