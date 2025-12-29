@@ -1618,6 +1618,19 @@ h4 {
   .monthly-calendar-week {
     min-height: 80px;
   }
+
+  /* Fix calendar header on mobile */
+  .card .flex.justify-between.items-center {
+    flex-wrap: nowrap;
+    gap: var(--space-xs);
+  }
+
+  .card .flex.justify-between.items-center .card-title {
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* Week Event Input */
