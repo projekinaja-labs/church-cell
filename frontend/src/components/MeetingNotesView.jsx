@@ -29,20 +29,21 @@ function getWeeksOfMonth(year, month) {
     }
 
     let weekNum = 1;
-    while (current <= lastDay) {
+    while (current.getMonth() === month) {
         const sunday = new Date(current);
+        // Week starts on Monday (6 days before Sunday)
         const weekStart = new Date(sunday);
-        const weekEnd = new Date(sunday);
-        weekEnd.setDate(weekEnd.getDate() + 6);
+        weekStart.setDate(weekStart.getDate() - 6);
 
-        const startLabel = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const endLabel = weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        // Always show full date range (Mon - Sun) even if Monday is in previous month
+        const startLabel = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const endLabel = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
         weeks.push({
             num: weekNum,
             sunday,
             start: weekStart,
-            end: weekEnd,
+            end: sunday,
             label: `${startLabel} - ${endLabel}`
         });
 

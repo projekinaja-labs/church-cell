@@ -61,12 +61,16 @@ function getWeeksOfMonth(year, month) {
         const weekStart = new Date(sunday);
         weekStart.setDate(weekStart.getDate() - 6);
 
+        // Always show full date range (Mon - Sun) even if Monday is in previous month
+        const startLabel = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const endLabel = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
         weeks.push({
             num: weekNum,
             start: weekStart,
             end: sunday,
             sunday: sunday,
-            label: `${weekStart.getMonth() === month ? weekStart.getDate() : ''}${weekStart.getMonth() !== month ? '' : '–'}${sunday.getDate()}`
+            label: `${startLabel} - ${endLabel}`
         });
 
         weekNum++;
