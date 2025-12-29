@@ -78,8 +78,9 @@ function getWeeksOfMonth(year, month) {
 }
 
 // Monthly Calendar Component
-function MonthlyCalendar({ notes, onWeekClick, t }) {
+function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [eventInputs, setEventInputs] = useState({});
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -89,10 +90,12 @@ function MonthlyCalendar({ notes, onWeekClick, t }) {
 
     const prevMonth = () => {
         setCurrentDate(new Date(year, month - 1, 1));
+        setEventInputs({});
     };
 
     const nextMonth = () => {
         setCurrentDate(new Date(year, month + 1, 1));
+        setEventInputs({});
     };
 
     // Check if a note exists for a week
@@ -103,8 +106,22 @@ function MonthlyCalendar({ notes, onWeekClick, t }) {
         });
     };
 
+    const handleEventChange = (weekKey, value) => {
+        setEventInputs(prev => ({ ...prev, [weekKey]: value }));
+    };
+
+    const handleEventBlur = async (week, note) => {
+        const weekKey = week.start.toISOString();
+        const newEvent = eventInputs[weekKey];
+
+        if (newEvent !== undefined && note) {
+            // Update existing note with new event
+            await onEventSave(note.id, newEvent, null);
+        }
+    };
+
     return (
-        <div className="card mt-xl">
+        <div className="card">
             <div className="flex justify-between items-center mb-lg">
                 <button className="btn btn-ghost btn-sm" onClick={prevMonth}>
                     <FiChevronLeft />
@@ -122,12 +139,15 @@ function MonthlyCalendar({ notes, onWeekClick, t }) {
                 {weeks.map((week, idx) => {
                     const note = getNoteForWeek(week.start, week.end);
                     const hasNote = !!note;
+                    const weekKey = week.start.toISOString();
+                    const eventValue = eventInputs[weekKey] !== undefined
+                        ? eventInputs[weekKey]
+                        : (note?.event || '');
 
                     return (
                         <div
                             key={idx}
                             className={`monthly-calendar-week ${hasNote ? 'has-note' : ''}`}
-                            onClick={() => hasNote && onWeekClick && onWeekClick(note)}
                         >
                             <div className="week-header">
                                 <span className="week-number">{t('meetingNotes.week')} {week.num}</span>
@@ -135,12 +155,25 @@ function MonthlyCalendar({ notes, onWeekClick, t }) {
                             </div>
                             <div className="week-content">
                                 {hasNote ? (
-                                    <div className="week-note">
-                                        <FiCheck className="week-check" />
-                                        <span className="week-note-title">{note.title}</span>
-                                    </div>
+                                    <>
+                                        <input
+                                            type="text"
+                                            className="week-event-input"
+                                            value={eventValue}
+                                            onChange={(e) => handleEventChange(weekKey, e.target.value)}
+                                            onBlur={() => handleEventBlur(week, note)}
+                                            placeholder={t('meetingNotes.eventPlaceholder')}
+                                        />
+                                        <div
+                                            className="week-note-link"
+                                            onClick={() => onWeekClick && onWeekClick(note)}
+                                        >
+                                            <FiCheck className="week-check" />
+                                            <span>{note.title}</span>
+                                        </div>
+                                    </>
                                 ) : (
-                                    <span className="week-empty">—</span>
+                                    <span className="week-empty">{t('meetingNotes.noNote')}</span>
                                 )}
                             </div>
                         </div>
@@ -258,6 +291,15 @@ export default function MeetingNotesTab() {
         handleEdit(note);
     };
 
+    const handleEventSave = async (noteId, event) => {
+        try {
+            await axios.put(`${API_URL}/meeting-notes/${noteId}`, { event });
+            fetchNotes();
+        } catch (error) {
+            console.error('Error saving event:', error);
+        }
+    };
+
     if (loading) {
         return <div className="loading-container"><div className="loading-spinner"></div></div>;
     }
@@ -331,7 +373,7 @@ export default function MeetingNotesTab() {
             </div>
 
             {/* Monthly Calendar */}
-            <MonthlyCalendar notes={notes} onWeekClick={handleWeekClick} t={t} />
+            <MonthlyCalendar notes={notes} onWeekClick={handleWeekClick} onEventSave={handleEventSave} t={t} />
 
             {notes.length === 0 ? (
                 <div className="empty-state mt-xl">

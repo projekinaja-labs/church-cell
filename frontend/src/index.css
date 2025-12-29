@@ -1621,3 +1621,41 @@ h4 {
     min-height: 80px;
   }
 }
+
+/* Week Event Input */
+.week-event-input {
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  margin-bottom: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.week-event-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.week-event-input::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.week-note-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.week-note-link:hover {
+  opacity: 0.8;
+}

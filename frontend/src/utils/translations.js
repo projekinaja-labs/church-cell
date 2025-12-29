@@ -185,6 +185,8 @@ export const translations = {
             requiredFields: 'Week date and title are required',
             week: 'Week',
             allNotes: 'All Meeting Notes',
+            eventPlaceholder: 'Event name...',
+            noNote: 'No note',
         },
     },
 
@@ -374,6 +376,8 @@ export const translations = {
             requiredFields: '주간 날짜와 제목은 필수입니다',
             week: '주',
             allNotes: '모든 모임 노트',
+            eventPlaceholder: '이벤트 이름...',
+            noNote: '노트 없음',
         },
     },
 };

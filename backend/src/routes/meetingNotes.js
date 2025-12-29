@@ -35,7 +35,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 // Create meeting note (admin only)
 router.post('/', authenticateToken, requireAdmin, async (req, res) => {
     try {
-        const { weekDate, title, content } = req.body;
+        const { weekDate, title, content, event } = req.body;
 
         if (!weekDate || !title) {
             return res.status(400).json({ error: 'Week date and title are required' });
@@ -45,7 +45,8 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
             data: {
                 weekDate: new Date(weekDate),
                 title,
-                content: content || ''
+                content: content || '',
+                event: event || null
             }
         });
         res.status(201).json(note);
@@ -61,12 +62,13 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
 // Update meeting note (admin only)
 router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
-        const { weekDate, title, content } = req.body;
+        const { weekDate, title, content, event } = req.body;
 
         const updateData = {};
         if (weekDate) updateData.weekDate = new Date(weekDate);
         if (title !== undefined) updateData.title = title;
         if (content !== undefined) updateData.content = content;
+        if (event !== undefined) updateData.event = event;
 
         const note = await req.prisma.meetingNote.update({
             where: { id: parseInt(req.params.id) },
