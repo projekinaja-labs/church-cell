@@ -156,7 +156,9 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, onWeekFi
                     const eventValue = eventInputs[weekKey] !== undefined
                         ? eventInputs[weekKey]
                         : (weekEvent?.event || '');
-                    const isFiltered = selectedFilter && selectedFilter.num === week.num;
+                    // Compare Sunday dates to ensure correct filter indicator across months
+                    const isFiltered = selectedFilter &&
+                        selectedFilter.sunday.toDateString() === week.sunday.toDateString();
 
                     return (
                         <div
@@ -442,7 +444,7 @@ export default function MeetingNotesTab() {
             ) : (
                 <div className="meeting-notes-list mt-xl">
                     <div className="flex justify-between items-center mb-lg mt-xl">
-                        <h3>
+                        <h3 className="mt-lg">
                             {filterWeek
                                 ? `${t('meetingNotes.week')} ${filterWeek.num} ${t('meetingNotes.notes')}`
                                 : t('meetingNotes.allNotes')
