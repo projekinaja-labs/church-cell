@@ -4,11 +4,11 @@ import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// All routes require authentication
 router.use(authenticateToken);
-router.use(requireAdmin);
 
-// Export reports to Excel
-router.get('/excel', async (req, res) => {
+// Export reports to Excel (Admin only)
+router.get('/excel', requireAdmin, async (req, res) => {
     try {
         const { cellGroupId, weekStart, weekEnd } = req.query;
 
@@ -77,8 +77,8 @@ router.get('/excel', async (req, res) => {
     }
 });
 
-// Export reports to CSV
-router.get('/csv', async (req, res) => {
+// Export reports to CSV (Admin only)
+router.get('/csv', requireAdmin, async (req, res) => {
     try {
         const { cellGroupId, weekStart, weekEnd } = req.query;
 
@@ -130,8 +130,8 @@ router.get('/csv', async (req, res) => {
     }
 });
 
-// Export summary by cell group
-router.get('/summary', async (req, res) => {
+// Export summary by cell group (Admin only)
+router.get('/summary', requireAdmin, async (req, res) => {
     try {
         const { weekStart, weekEnd } = req.query;
 
@@ -192,7 +192,7 @@ router.get('/summary', async (req, res) => {
     }
 });
 
-// Export meeting note to PDF
+// Export meeting note to PDF (Available to all authenticated users)
 router.get('/meeting-note/:id/pdf', async (req, res) => {
     try {
         const note = await req.prisma.meetingNote.findUnique({
