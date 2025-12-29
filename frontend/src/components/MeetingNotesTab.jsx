@@ -5,7 +5,8 @@ import axios from 'axios';
 import { useLanguage } from '../context/LanguageContext';
 import DatePickerInput from './DatePickerInput';
 import {
-    FiPlus, FiEdit2, FiTrash2, FiDownload, FiSave, FiX, FiCalendar
+    FiPlus, FiEdit2, FiTrash2, FiDownload, FiSave, FiX, FiCalendar,
+    FiChevronLeft, FiChevronRight, FiCheck
 } from 'react-icons/fi';
 
 const API_URL = '/api';
@@ -38,6 +39,116 @@ function formatDate(dateString) {
         month: 'long',
         day: 'numeric'
     });
+}
+
+// Get weeks of a month
+function getWeeksOfMonth(year, month) {
+    const weeks = [];
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    // Start from the Monday of the first week
+    let current = new Date(firstDay);
+    const dayOfWeek = current.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday = 1
+    current.setDate(current.getDate() + diff);
+
+    let weekNum = 1;
+    while (current <= lastDay || weeks.length < 4) {
+        const weekStart = new Date(current);
+        const weekEnd = new Date(current);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+
+        weeks.push({
+            num: weekNum,
+            start: weekStart,
+            end: weekEnd,
+            label: `${weekStart.getDate()}–${weekEnd.getDate()}`
+        });
+
+        weekNum++;
+        current.setDate(current.getDate() + 7);
+
+        // Stop if we've gone too far past the month
+        if (weekStart.getMonth() > month && weeks.length >= 4) break;
+        if (weeks.length >= 6) break; // Max 6 weeks
+    }
+
+    return weeks;
+}
+
+// Monthly Calendar Component
+function MonthlyCalendar({ notes, onWeekClick, t }) {
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const weeks = getWeeksOfMonth(year, month);
+
+    const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    const prevMonth = () => {
+        setCurrentDate(new Date(year, month - 1, 1));
+    };
+
+    const nextMonth = () => {
+        setCurrentDate(new Date(year, month + 1, 1));
+    };
+
+    // Check if a note exists for a week
+    const getNoteForWeek = (weekStart, weekEnd) => {
+        return notes.find(note => {
+            const noteDate = new Date(note.weekDate);
+            return noteDate >= weekStart && noteDate <= weekEnd;
+        });
+    };
+
+    return (
+        <div className="card mt-xl">
+            <div className="flex justify-between items-center mb-lg">
+                <button className="btn btn-ghost btn-sm" onClick={prevMonth}>
+                    <FiChevronLeft />
+                </button>
+                <h3 className="card-title">
+                    <FiCalendar style={{ marginRight: '8px' }} />
+                    {monthName}
+                </h3>
+                <button className="btn btn-ghost btn-sm" onClick={nextMonth}>
+                    <FiChevronRight />
+                </button>
+            </div>
+
+            <div className="monthly-calendar-grid">
+                {weeks.map((week, idx) => {
+                    const note = getNoteForWeek(week.start, week.end);
+                    const hasNote = !!note;
+
+                    return (
+                        <div
+                            key={idx}
+                            className={`monthly-calendar-week ${hasNote ? 'has-note' : ''}`}
+                            onClick={() => hasNote && onWeekClick && onWeekClick(note)}
+                        >
+                            <div className="week-header">
+                                <span className="week-number">{t('meetingNotes.week')} {week.num}</span>
+                                <span className="week-dates">{week.label}</span>
+                            </div>
+                            <div className="week-content">
+                                {hasNote ? (
+                                    <div className="week-note">
+                                        <FiCheck className="week-check" />
+                                        <span className="week-note-title">{note.title}</span>
+                                    </div>
+                                ) : (
+                                    <span className="week-empty">—</span>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
 }
 
 export default function MeetingNotesTab() {
@@ -143,6 +254,10 @@ export default function MeetingNotesTab() {
         setEditingNote(null);
     };
 
+    const handleWeekClick = (note) => {
+        handleEdit(note);
+    };
+
     if (loading) {
         return <div className="loading-container"><div className="loading-spinner"></div></div>;
     }
@@ -215,14 +330,18 @@ export default function MeetingNotesTab() {
                 </button>
             </div>
 
+            {/* Monthly Calendar */}
+            <MonthlyCalendar notes={notes} onWeekClick={handleWeekClick} t={t} />
+
             {notes.length === 0 ? (
-                <div className="empty-state">
+                <div className="empty-state mt-xl">
                     <div className="empty-state-icon">📝</div>
                     <h3 className="empty-state-title">{t('meetingNotes.emptyTitle')}</h3>
                     <p>{t('meetingNotes.emptyMessage')}</p>
                 </div>
             ) : (
-                <div className="meeting-notes-list">
+                <div className="meeting-notes-list mt-xl">
+                    <h3 className="mb-lg">{t('meetingNotes.allNotes')}</h3>
                     {notes.map(note => (
                         <div key={note.id} className="card mb-lg">
                             <div className="card-header">

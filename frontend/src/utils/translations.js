@@ -183,6 +183,8 @@ export const translations = {
             deleteFailed: 'Failed to delete meeting note',
             saveFailed: 'Failed to save meeting note',
             requiredFields: 'Week date and title are required',
+            week: 'Week',
+            allNotes: 'All Meeting Notes',
         },
     },
 
@@ -370,6 +372,8 @@ export const translations = {
             deleteFailed: '모임 노트 삭제 실패',
             saveFailed: '모임 노트 저장 실패',
             requiredFields: '주간 날짜와 제목은 필수입니다',
+            week: '주',
+            allNotes: '모든 모임 노트',
         },
     },
 };
