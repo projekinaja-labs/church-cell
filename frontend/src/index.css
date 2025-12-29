@@ -1667,17 +1667,17 @@ h4 {
 /* Week Event Row with Save Button */
 .week-event-row {
   display: flex;
-  gap: var(--space-xs);
-  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .week-event-row .week-event-input {
-  flex: 1;
+  width: 100%;
   margin-bottom: 0;
 }
 
 .week-event-save {
-  padding: var(--space-xs) var(--space-sm);
-  min-width: auto;
-  flex-shrink: 0;
+  padding: var(--space-xs) var(--space-md);
+  width: 100%;
+  justify-content: center;
 }
