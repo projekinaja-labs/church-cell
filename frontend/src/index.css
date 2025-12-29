@@ -1631,8 +1631,12 @@ h4 {
   background: var(--bg-secondary);
   color: var(--text-primary);
   font-size: 0.8rem;
+  font-family: inherit;
   margin-bottom: var(--space-xs);
   transition: all var(--transition-fast);
+  resize: vertical;
+  min-height: 40px;
+  line-height: 1.4;
 }
 
 .week-event-input:focus {

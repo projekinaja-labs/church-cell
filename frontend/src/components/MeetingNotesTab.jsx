@@ -156,13 +156,13 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
                             <div className="week-content">
                                 {hasNote ? (
                                     <>
-                                        <input
-                                            type="text"
+                                        <textarea
                                             className="week-event-input"
                                             value={eventValue}
                                             onChange={(e) => handleEventChange(weekKey, e.target.value)}
                                             onBlur={() => handleEventBlur(week, note)}
                                             placeholder={t('meetingNotes.eventPlaceholder')}
+                                            rows={2}
                                         />
                                         <div
                                             className="week-note-link"
