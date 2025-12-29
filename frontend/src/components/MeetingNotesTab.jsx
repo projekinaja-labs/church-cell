@@ -77,7 +77,7 @@ function getWeeksOfMonth(year, month) {
 }
 
 // Monthly Calendar Component
-function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
+function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [eventInputs, setEventInputs] = useState({});
 
@@ -97,11 +97,19 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
         setEventInputs({});
     };
 
-    // Check if a note exists for a week
-    const getNoteForWeek = (weekStart, weekEnd) => {
-        return notes.find(note => {
+    // Get all notes for a week
+    const getNotesForWeek = (weekStart, weekEnd) => {
+        return notes.filter(note => {
             const noteDate = new Date(note.weekDate);
             return noteDate >= weekStart && noteDate <= weekEnd;
+        });
+    };
+
+    // Get event for a specific week (by Sunday date)
+    const getEventForWeek = (sunday) => {
+        return weekEvents.find(e => {
+            const eventDate = new Date(e.weekDate);
+            return eventDate.toDateString() === sunday.toDateString();
         });
     };
 
@@ -109,18 +117,13 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
         setEventInputs(prev => ({ ...prev, [weekKey]: value }));
     };
 
-    const handleEventBlur = async (week, note) => {
+    const handleEventBlur = async (week) => {
         const weekKey = week.start.toISOString();
         const newEvent = eventInputs[weekKey];
 
-        if (newEvent !== undefined && newEvent.trim() !== '') {
-            if (note) {
-                // Update existing note with new event
-                await onEventSave(note.id, newEvent, null);
-            } else {
-                // Create new note with just the event (use Sunday as weekDate)
-                await onEventSave(null, newEvent, week.sunday.toISOString().split('T')[0]);
-            }
+        if (newEvent !== undefined) {
+            // Save event with Sunday date
+            await onEventSave(week.sunday.toISOString().split('T')[0], newEvent);
         }
     };
 
@@ -141,17 +144,19 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
 
             <div className="monthly-calendar-grid">
                 {weeks.map((week, idx) => {
-                    const note = getNoteForWeek(week.start, week.end);
-                    const hasNote = !!note;
+                    const weekNotes = getNotesForWeek(week.start, week.end);
+                    const hasNotes = weekNotes.length > 0;
                     const weekKey = week.start.toISOString();
+                    // Get event from weekEvents (separate table)
+                    const weekEvent = getEventForWeek(week.sunday);
                     const eventValue = eventInputs[weekKey] !== undefined
                         ? eventInputs[weekKey]
-                        : (note?.event || '');
+                        : (weekEvent?.event || '');
 
                     return (
                         <div
                             key={idx}
-                            className={`monthly-calendar-week ${hasNote ? 'has-note' : ''}`}
+                            className={`monthly-calendar-week ${hasNotes ? 'has-note' : ''}`}
                         >
                             <div className="week-header">
                                 <span className="week-number">{t('meetingNotes.week')} {week.num}</span>
@@ -162,19 +167,20 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
                                     className="week-event-input"
                                     value={eventValue}
                                     onChange={(e) => handleEventChange(weekKey, e.target.value)}
-                                    onBlur={() => handleEventBlur(week, note)}
+                                    onBlur={() => handleEventBlur(week)}
                                     placeholder={t('meetingNotes.eventPlaceholder')}
                                     rows={2}
                                 />
-                                {hasNote && (
+                                {weekNotes.map(note => (
                                     <div
+                                        key={note.id}
                                         className="week-note-link"
                                         onClick={() => onWeekClick && onWeekClick(note)}
                                     >
                                         <FiCheck className="week-check" />
                                         <span>{note.title}</span>
                                     </div>
-                                )}
+                                ))}
                             </div>
                         </div>
                     );
@@ -187,6 +193,7 @@ function MonthlyCalendar({ notes, onWeekClick, onEventSave, t }) {
 export default function MeetingNotesTab() {
     const { t } = useLanguage();
     const [notes, setNotes] = useState([]);
+    const [weekEvents, setWeekEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showEditor, setShowEditor] = useState(false);
     const [editingNote, setEditingNote] = useState(null);
@@ -198,8 +205,23 @@ export default function MeetingNotesTab() {
     });
 
     useEffect(() => {
-        fetchNotes();
+        fetchData();
     }, []);
+
+    const fetchData = async () => {
+        try {
+            const [notesRes, eventsRes] = await Promise.all([
+                axios.get(`${API_URL}/meeting-notes`),
+                axios.get(`${API_URL}/week-events`)
+            ]);
+            setNotes(notesRes.data);
+            setWeekEvents(eventsRes.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchNotes = async () => {
         try {
@@ -207,8 +229,15 @@ export default function MeetingNotesTab() {
             setNotes(response.data);
         } catch (error) {
             console.error('Error fetching meeting notes:', error);
-        } finally {
-            setLoading(false);
+        }
+    };
+
+    const fetchWeekEvents = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/week-events`);
+            setWeekEvents(response.data);
+        } catch (error) {
+            console.error('Error fetching week events:', error);
         }
     };
 
@@ -291,21 +320,10 @@ export default function MeetingNotesTab() {
         handleEdit(note);
     };
 
-    const handleEventSave = async (noteId, event, weekDate) => {
+    const handleEventSave = async (weekDate, event) => {
         try {
-            if (noteId) {
-                // Update existing note with new event
-                await axios.put(`${API_URL}/meeting-notes/${noteId}`, { event });
-            } else if (weekDate) {
-                // Create new note with just the event
-                await axios.post(`${API_URL}/meeting-notes`, {
-                    weekDate,
-                    title: event.substring(0, 50) || 'Event',
-                    content: '',
-                    event
-                });
-            }
-            fetchNotes();
+            await axios.post(`${API_URL}/week-events`, { weekDate, event });
+            fetchWeekEvents();
         } catch (error) {
             console.error('Error saving event:', error);
         }
@@ -384,7 +402,7 @@ export default function MeetingNotesTab() {
             </div>
 
             {/* Monthly Calendar */}
-            <MonthlyCalendar notes={notes} onWeekClick={handleWeekClick} onEventSave={handleEventSave} t={t} />
+            <MonthlyCalendar notes={notes} weekEvents={weekEvents} onWeekClick={handleWeekClick} onEventSave={handleEventSave} t={t} />
 
             {notes.length === 0 ? (
                 <div className="empty-state mt-xl">

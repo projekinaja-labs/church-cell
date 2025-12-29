@@ -9,6 +9,7 @@ import adminRoutes from './routes/admin.js';
 import leaderRoutes from './routes/leader.js';
 import exportRoutes from './routes/export.js';
 import meetingNotesRoutes from './routes/meetingNotes.js';
+import weekEventsRoutes from './routes/weekEvents.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/leader', leaderRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/meeting-notes', meetingNotesRoutes);
+app.use('/api/week-events', weekEventsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

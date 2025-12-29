@@ -56,10 +56,17 @@ model WeeklyReport {
 
 model MeetingNote {
   id        Int      @id @default(autoincrement())
-  weekDate  DateTime @unique
+  weekDate  DateTime
   title     String
   content   String   // Rich text content stored as HTML
-  event     String?  // Short event label for calendar display
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WeekEvent {
+  id        Int      @id @default(autoincrement())
+  weekDate  DateTime @unique  // Sunday of that week
+  event     String   // Event name/description for the week
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
