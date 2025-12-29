@@ -1744,3 +1744,22 @@ h4 {
   position: absolute;
   right: var(--space-xs);
 }
+
+/* Read-only Event Display */
+.week-event-display {
+  background: var(--bg-tertiary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+  white-space: pre-wrap;
+}
+
+.week-note-link.readonly {
+  cursor: default;
+}
+
+.week-note-link.readonly:hover {
+  opacity: 1;
+}
