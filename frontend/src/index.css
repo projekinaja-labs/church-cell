@@ -1550,8 +1550,6 @@ h4 {
 
 .monthly-calendar-week.has-note {
   background: var(--bg-glass);
-  border-color: var(--accent-primary);
-  cursor: pointer;
 }
 
 .monthly-calendar-week.has-note:hover {
