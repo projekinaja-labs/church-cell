@@ -119,8 +119,10 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
 
     const handleSaveEvent = async (week, eventValue) => {
         const weekKey = week.start.toISOString();
-        // Save event with Sunday date
-        await onEventSave(week.sunday.toISOString().split('T')[0], eventValue || '');
+        // Save event with Sunday date - use local date to avoid timezone shift
+        const sunday = week.sunday;
+        const dateStr = `${sunday.getFullYear()}-${String(sunday.getMonth() + 1).padStart(2, '0')}-${String(sunday.getDate()).padStart(2, '0')}`;
+        await onEventSave(dateStr, eventValue || '');
         // Clear local edit state so UI shows saved value from server
         setEventInputs(prev => {
             const newState = { ...prev };
