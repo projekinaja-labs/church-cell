@@ -163,18 +163,13 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, onWeekFi
                             key={idx}
                             className={`monthly-calendar-week ${hasNotes ? 'has-note' : ''} ${isFiltered ? 'is-filtered' : ''}`}
                         >
-                            <div className="week-header">
-                                <div className="week-header-info">
-                                    <span className="week-number">{t('meetingNotes.week')} {week.num}</span>
-                                    <span className="week-dates">{week.label}</span>
-                                </div>
-                                <button
-                                    className={`btn btn-ghost btn-xs week-filter-btn ${isFiltered ? 'active' : ''}`}
-                                    onClick={() => onWeekFilter && onWeekFilter(isFiltered ? null : week)}
-                                    title={isFiltered ? t('meetingNotes.showAll') : t('meetingNotes.filterWeek')}
-                                >
-                                    <FiSearch />
-                                </button>
+                            <div
+                                className="week-header clickable"
+                                onClick={() => onWeekFilter && onWeekFilter(isFiltered ? null : week)}
+                                title={isFiltered ? t('meetingNotes.showAll') : t('meetingNotes.filterWeek')}
+                            >
+                                <span className="week-number">{t('meetingNotes.week')} {week.num}</span>
+                                <span className="week-dates">{week.label}</span>
                             </div>
                             <div className="week-content">
                                 <div className="week-event-row">
@@ -221,6 +216,7 @@ export default function MeetingNotesTab() {
     const [editingNote, setEditingNote] = useState(null);
     const [saving, setSaving] = useState(false);
     const [filterWeek, setFilterWeek] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const [formData, setFormData] = useState({
         weekDate: '',
         title: '',
@@ -461,11 +457,42 @@ export default function MeetingNotesTab() {
                             </button>
                         )}
                     </div>
+
+                    {/* Search Input */}
+                    <div className="search-input-container mb-lg">
+                        <FiSearch className="search-icon" />
+                        <input
+                            type="text"
+                            className="form-input search-input"
+                            placeholder={t('meetingNotes.searchPlaceholder')}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        {searchQuery && (
+                            <button
+                                className="btn btn-ghost btn-xs search-clear"
+                                onClick={() => setSearchQuery('')}
+                            >
+                                <FiX />
+                            </button>
+                        )}
+                    </div>
+
                     {notes
                         .filter(note => {
-                            if (!filterWeek) return true;
-                            const noteDate = new Date(note.weekDate);
-                            return noteDate >= filterWeek.start && noteDate <= filterWeek.end;
+                            // Week filter
+                            if (filterWeek) {
+                                const noteDate = new Date(note.weekDate);
+                                if (!(noteDate >= filterWeek.start && noteDate <= filterWeek.end)) return false;
+                            }
+                            // Text search filter
+                            if (searchQuery.trim()) {
+                                const query = searchQuery.toLowerCase();
+                                const titleMatch = note.title.toLowerCase().includes(query);
+                                const contentMatch = note.content.toLowerCase().includes(query);
+                                return titleMatch || contentMatch;
+                            }
+                            return true;
                         })
                         .map(note => (
                             <div key={note.id} className="card mb-lg">

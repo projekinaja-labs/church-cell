@@ -190,6 +190,7 @@ export const translations = {
             notes: 'Notes',
             filterWeek: 'Filter by this week',
             showAll: 'Show All',
+            searchPlaceholder: 'Search by title or content...',
         },
     },
 
@@ -384,6 +385,7 @@ export const translations = {
             notes: '노트',
             filterWeek: '이 주간으로 필터',
             showAll: '전체 보기',
+            searchPlaceholder: '제목 또는 내용으로 검색...',
         },
     },
 };
