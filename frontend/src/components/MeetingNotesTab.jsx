@@ -336,6 +336,7 @@ export default function MeetingNotesTab() {
         try {
             await axios.post(`${API_URL}/week-events`, { weekDate, event });
             await fetchWeekEvents();
+            alert('Event saved successfully!');
         } catch (error) {
             console.error('Error saving event:', error);
             alert('Failed to save event: ' + (error.response?.data?.error || error.message));
