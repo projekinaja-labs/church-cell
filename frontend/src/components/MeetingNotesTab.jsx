@@ -41,37 +41,36 @@ function formatDate(dateString) {
     });
 }
 
-// Get weeks of a month
+// Get weeks of a month (based on Sundays - week belongs to month where Sunday falls)
 function getWeeksOfMonth(year, month) {
     const weeks = [];
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
 
-    // Start from the Monday of the first week
+    // Find all Sundays in this month
     let current = new Date(firstDay);
-    const dayOfWeek = current.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday = 1
-    current.setDate(current.getDate() + diff);
+    // Move to first Sunday of the month (or first day if it's Sunday)
+    while (current.getDay() !== 0) {
+        current.setDate(current.getDate() + 1);
+    }
 
     let weekNum = 1;
-    while (current <= lastDay || weeks.length < 4) {
-        const weekStart = new Date(current);
-        const weekEnd = new Date(current);
-        weekEnd.setDate(weekEnd.getDate() + 6);
+    while (current.getMonth() === month) {
+        const sunday = new Date(current);
+        // Week starts on Monday (6 days before Sunday)
+        const weekStart = new Date(sunday);
+        weekStart.setDate(weekStart.getDate() - 6);
 
         weeks.push({
             num: weekNum,
             start: weekStart,
-            end: weekEnd,
-            label: `${weekStart.getDate()}–${weekEnd.getDate()}`
+            end: sunday,
+            sunday: sunday,
+            label: `${weekStart.getMonth() === month ? weekStart.getDate() : ''}${weekStart.getMonth() !== month ? '' : '–'}${sunday.getDate()}`
         });
 
         weekNum++;
         current.setDate(current.getDate() + 7);
-
-        // Stop if we've gone too far past the month
-        if (weekStart.getMonth() > month && weeks.length >= 4) break;
-        if (weeks.length >= 6) break; // Max 6 weeks
     }
 
     return weeks;
