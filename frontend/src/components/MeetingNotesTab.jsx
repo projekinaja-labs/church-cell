@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import DatePickerInput from './DatePickerInput';
 import {
     FiPlus, FiEdit2, FiTrash2, FiDownload, FiSave, FiX, FiCalendar,
-    FiChevronLeft, FiChevronRight, FiCheck
+    FiChevronLeft, FiChevronRight, FiCheck, FiSearch
 } from 'react-icons/fi';
 
 const API_URL = '/api';
@@ -77,7 +77,7 @@ function getWeeksOfMonth(year, month) {
 }
 
 // Monthly Calendar Component
-function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
+function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, onWeekFilter, selectedFilter, t }) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [eventInputs, setEventInputs] = useState({});
 
@@ -156,15 +156,25 @@ function MonthlyCalendar({ notes, weekEvents, onWeekClick, onEventSave, t }) {
                     const eventValue = eventInputs[weekKey] !== undefined
                         ? eventInputs[weekKey]
                         : (weekEvent?.event || '');
+                    const isFiltered = selectedFilter && selectedFilter.num === week.num;
 
                     return (
                         <div
                             key={idx}
-                            className={`monthly-calendar-week ${hasNotes ? 'has-note' : ''}`}
+                            className={`monthly-calendar-week ${hasNotes ? 'has-note' : ''} ${isFiltered ? 'is-filtered' : ''}`}
                         >
                             <div className="week-header">
-                                <span className="week-number">{t('meetingNotes.week')} {week.num}</span>
-                                <span className="week-dates">{week.label}</span>
+                                <div className="week-header-info">
+                                    <span className="week-number">{t('meetingNotes.week')} {week.num}</span>
+                                    <span className="week-dates">{week.label}</span>
+                                </div>
+                                <button
+                                    className={`btn btn-ghost btn-xs week-filter-btn ${isFiltered ? 'active' : ''}`}
+                                    onClick={() => onWeekFilter && onWeekFilter(isFiltered ? null : week)}
+                                    title={isFiltered ? t('meetingNotes.showAll') : t('meetingNotes.filterWeek')}
+                                >
+                                    <FiSearch />
+                                </button>
                             </div>
                             <div className="week-content">
                                 <div className="week-event-row">
@@ -210,6 +220,7 @@ export default function MeetingNotesTab() {
     const [showEditor, setShowEditor] = useState(false);
     const [editingNote, setEditingNote] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [filterWeek, setFilterWeek] = useState(null);
     const [formData, setFormData] = useState({
         weekDate: '',
         title: '',
@@ -416,7 +427,15 @@ export default function MeetingNotesTab() {
             </div>
 
             {/* Monthly Calendar */}
-            <MonthlyCalendar notes={notes} weekEvents={weekEvents} onWeekClick={handleWeekClick} onEventSave={handleEventSave} t={t} />
+            <MonthlyCalendar
+                notes={notes}
+                weekEvents={weekEvents}
+                onWeekClick={handleWeekClick}
+                onEventSave={handleEventSave}
+                onWeekFilter={setFilterWeek}
+                selectedFilter={filterWeek}
+                t={t}
+            />
 
             {notes.length === 0 ? (
                 <div className="empty-state mt-xl">
@@ -426,47 +445,68 @@ export default function MeetingNotesTab() {
                 </div>
             ) : (
                 <div className="meeting-notes-list mt-xl">
-                    <h3 className="mb-lg mt-xl">{t('meetingNotes.allNotes')}</h3>
-                    {notes.map(note => (
-                        <div key={note.id} className="card mb-lg">
-                            <div className="card-header">
-                                <div>
-                                    <h3 className="card-title">{note.title}</h3>
-                                    <p className="text-muted text-sm">
-                                        <FiCalendar style={{ marginRight: '6px', verticalAlign: 'middle' }} />
-                                        {formatDate(note.weekDate)}
-                                    </p>
+                    <div className="flex justify-between items-center mb-lg mt-xl">
+                        <h3>
+                            {filterWeek
+                                ? `${t('meetingNotes.week')} ${filterWeek.num} ${t('meetingNotes.notes')}`
+                                : t('meetingNotes.allNotes')
+                            }
+                        </h3>
+                        {filterWeek && (
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => setFilterWeek(null)}
+                            >
+                                <FiX /> {t('meetingNotes.showAll')}
+                            </button>
+                        )}
+                    </div>
+                    {notes
+                        .filter(note => {
+                            if (!filterWeek) return true;
+                            const noteDate = new Date(note.weekDate);
+                            return noteDate >= filterWeek.start && noteDate <= filterWeek.end;
+                        })
+                        .map(note => (
+                            <div key={note.id} className="card mb-lg">
+                                <div className="card-header">
+                                    <div>
+                                        <h3 className="card-title">{note.title}</h3>
+                                        <p className="text-muted text-sm">
+                                            <FiCalendar style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                                            {formatDate(note.weekDate)}
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-sm">
+                                        <button
+                                            className="btn btn-ghost btn-sm"
+                                            onClick={() => handleDownload(note)}
+                                            title={t('meetingNotes.download')}
+                                        >
+                                            <FiDownload />
+                                        </button>
+                                        <button
+                                            className="btn btn-ghost btn-sm"
+                                            onClick={() => handleEdit(note)}
+                                            title={t('common.edit')}
+                                        >
+                                            <FiEdit2 />
+                                        </button>
+                                        <button
+                                            className="btn btn-ghost btn-sm"
+                                            onClick={() => handleDelete(note.id)}
+                                            title={t('common.delete')}
+                                        >
+                                            <FiTrash2 />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="flex gap-sm">
-                                    <button
-                                        className="btn btn-ghost btn-sm"
-                                        onClick={() => handleDownload(note)}
-                                        title={t('meetingNotes.download')}
-                                    >
-                                        <FiDownload />
-                                    </button>
-                                    <button
-                                        className="btn btn-ghost btn-sm"
-                                        onClick={() => handleEdit(note)}
-                                        title={t('common.edit')}
-                                    >
-                                        <FiEdit2 />
-                                    </button>
-                                    <button
-                                        className="btn btn-ghost btn-sm"
-                                        onClick={() => handleDelete(note.id)}
-                                        title={t('common.delete')}
-                                    >
-                                        <FiTrash2 />
-                                    </button>
-                                </div>
+                                <div
+                                    className="meeting-note-content"
+                                    dangerouslySetInnerHTML={{ __html: note.content }}
+                                />
                             </div>
-                            <div
-                                className="meeting-note-content"
-                                dangerouslySetInnerHTML={{ __html: note.content }}
-                            />
-                        </div>
-                    ))}
+                        ))}
                 </div>
             )}
         </div>

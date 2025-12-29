@@ -187,6 +187,9 @@ export const translations = {
             allNotes: 'All Meeting Notes',
             eventPlaceholder: 'Event name...',
             noNote: 'No note',
+            notes: 'Notes',
+            filterWeek: 'Filter by this week',
+            showAll: 'Show All',
         },
     },
 
@@ -378,6 +381,9 @@ export const translations = {
             allNotes: '모든 모임 노트',
             eventPlaceholder: '이벤트 이름...',
             noNote: '노트 없음',
+            notes: '노트',
+            filterWeek: '이 주간으로 필터',
+            showAll: '전체 보기',
         },
     },
 };
