@@ -9,6 +9,8 @@ import {
 import DatePickerInput from '../components/DatePickerInput';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import ThemeToggle from '../components/ThemeToggle';
+import MeetingNotesTab from '../components/MeetingNotesTab';
+import { FiEdit3 } from 'react-icons/fi';
 
 const API_URL = '/api';
 
@@ -816,6 +818,7 @@ export default function AdminDashboard() {
         { id: 'cell-groups', label: t('nav.cellGroups'), icon: <FiGrid /> },
         { id: 'members', label: t('nav.members'), icon: <FiUsers /> },
         { id: 'reports', label: t('nav.reports'), icon: <FiFileText /> },
+        { id: 'meeting-notes', label: t('nav.meetingNotes'), icon: <FiEdit3 /> },
         { id: 'export', label: t('nav.export'), icon: <FiDownload /> },
         { id: 'credentials', label: t('nav.credentials'), icon: <FiKey /> },
     ];
@@ -825,6 +828,7 @@ export default function AdminDashboard() {
             case 'cell-groups': return <CellGroupsTab />;
             case 'members': return <MembersTab />;
             case 'reports': return <ReportsTab />;
+            case 'meeting-notes': return <MeetingNotesTab />;
             case 'export': return <ExportTab />;
             case 'credentials': return <CredentialsTab />;
             default: return <CellGroupsTab />;

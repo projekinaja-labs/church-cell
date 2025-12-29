@@ -50,6 +50,7 @@ export const translations = {
             weeklyReport: 'Weekly Report',
             history: 'History',
             myCellGroup: 'My Cell Group',
+            meetingNotes: 'Meeting Notes',
         },
 
         // Cell Groups
@@ -160,6 +161,29 @@ export const translations = {
             status: 'Status',
             actions: 'Actions',
         },
+
+        // Meeting Notes
+        meetingNotes: {
+            title: 'Meeting Notes',
+            addNote: 'Add Note',
+            createNote: 'Create Meeting Note',
+            editNote: 'Edit Meeting Note',
+            weekDate: 'Week Date',
+            selectDate: 'Select date',
+            noteTitle: 'Title',
+            titlePlaceholder: 'Enter note title...',
+            content: 'Content',
+            contentPlaceholder: 'Start writing your meeting notes...',
+            emptyTitle: 'No Meeting Notes',
+            emptyMessage: 'Create your first meeting note to get started',
+            noNotesYet: 'No meeting notes have been added yet',
+            download: 'Download',
+            downloadFailed: 'Failed to download meeting note',
+            deleteConfirm: 'Are you sure you want to delete this meeting note?',
+            deleteFailed: 'Failed to delete meeting note',
+            saveFailed: 'Failed to save meeting note',
+            requiredFields: 'Week date and title are required',
+        },
     },
 
     ko: {
@@ -213,6 +237,7 @@ export const translations = {
             weeklyReport: '주간 보고서',
             history: '기록',
             myCellGroup: '내 셀 그룹',
+            meetingNotes: '모임 노트',
         },
 
         // Cell Groups
@@ -322,6 +347,29 @@ export const translations = {
             cellGroup: '셀 그룹',
             status: '상태',
             actions: '작업',
+        },
+
+        // Meeting Notes
+        meetingNotes: {
+            title: '모임 노트',
+            addNote: '노트 추가',
+            createNote: '모임 노트 생성',
+            editNote: '모임 노트 편집',
+            weekDate: '주간 날짜',
+            selectDate: '날짜 선택',
+            noteTitle: '제목',
+            titlePlaceholder: '노트 제목 입력...',
+            content: '내용',
+            contentPlaceholder: '모임 노트를 작성하세요...',
+            emptyTitle: '모임 노트 없음',
+            emptyMessage: '첫 번째 모임 노트를 만들어 시작하세요',
+            noNotesYet: '아직 모임 노트가 추가되지 않았습니다',
+            download: '다운로드',
+            downloadFailed: '모임 노트 다운로드 실패',
+            deleteConfirm: '이 모임 노트를 정말 삭제하시겠습니까?',
+            deleteFailed: '모임 노트 삭제 실패',
+            saveFailed: '모임 노트 저장 실패',
+            requiredFields: '주간 날짜와 제목은 필수입니다',
         },
     },
 };

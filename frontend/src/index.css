@@ -1413,3 +1413,116 @@ h4 {
     radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
 }
+
+/* ==================== QUILL EDITOR ==================== */
+.quill-container {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.quill-container .ql-toolbar {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.quill-container .ql-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  min-height: 300px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.quill-container .ql-editor {
+  color: var(--text-primary);
+  min-height: 300px;
+}
+
+.quill-container .ql-editor.ql-blank::before {
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+.quill-container .ql-toolbar button,
+.quill-container .ql-toolbar .ql-picker-label {
+  color: var(--text-secondary);
+}
+
+.quill-container .ql-toolbar button:hover,
+.quill-container .ql-toolbar .ql-picker-label:hover {
+  color: var(--accent-primary);
+}
+
+.quill-container .ql-toolbar button.ql-active,
+.quill-container .ql-toolbar .ql-picker-label.ql-active {
+  color: var(--accent-primary);
+}
+
+.quill-container .ql-stroke {
+  stroke: var(--text-secondary);
+}
+
+.quill-container .ql-fill {
+  fill: var(--text-secondary);
+}
+
+.quill-container .ql-picker-options {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+/* ==================== MEETING NOTE CONTENT ==================== */
+.meeting-note-content {
+  padding: var(--space-md) 0;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.meeting-note-content h1 {
+  font-size: 1.75rem;
+  margin: var(--space-lg) 0 var(--space-md);
+}
+
+.meeting-note-content h2 {
+  font-size: 1.5rem;
+  margin: var(--space-lg) 0 var(--space-md);
+}
+
+.meeting-note-content h3 {
+  font-size: 1.25rem;
+  margin: var(--space-md) 0 var(--space-sm);
+}
+
+.meeting-note-content p {
+  margin-bottom: var(--space-md);
+}
+
+.meeting-note-content ul,
+.meeting-note-content ol {
+  margin-left: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.meeting-note-content li {
+  margin-bottom: var(--space-sm);
+}
+
+.meeting-note-content strong {
+  font-weight: 600;
+}
+
+.meeting-note-content em {
+  font-style: italic;
+}
+
+.meeting-note-content blockquote {
+  border-left: 4px solid var(--accent-primary);
+  padding-left: var(--space-md);
+  margin: var(--space-md) 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}

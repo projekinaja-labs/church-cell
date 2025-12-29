@@ -192,4 +192,105 @@ router.get('/summary', async (req, res) => {
     }
 });
 
+// Export meeting note to PDF
+router.get('/meeting-note/:id/pdf', async (req, res) => {
+    try {
+        const note = await req.prisma.meetingNote.findUnique({
+            where: { id: parseInt(req.params.id) }
+        });
+
+        if (!note) {
+            return res.status(404).json({ error: 'Meeting note not found' });
+        }
+
+        const weekDate = new Date(note.weekDate).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Create HTML content for PDF
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e1e2f;
+            margin-bottom: 10px;
+        }
+        .date {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .content {
+            font-size: 14px;
+        }
+        .content h1 { font-size: 24px; margin-top: 20px; }
+        .content h2 { font-size: 20px; margin-top: 18px; }
+        .content h3 { font-size: 16px; margin-top: 16px; }
+        .content ul, .content ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        .content li { margin-bottom: 8px; }
+        .content p { margin-bottom: 12px; }
+        .content strong { font-weight: 600; }
+        .content em { font-style: italic; }
+        .content mark, .content span[style*="background"] {
+            background-color: #fef08a;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">${note.title}</div>
+        <div class="date">Week of ${weekDate}</div>
+    </div>
+    <div class="content">
+        ${note.content}
+    </div>
+    <div class="footer">
+        Generated on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </div>
+</body>
+</html>`;
+
+        // For now, return HTML that can be printed to PDF by the browser
+        // A proper PDF generation would require puppeteer or similar
+        res.setHeader('Content-Type', 'text/html');
+        res.setHeader('Content-Disposition', `attachment; filename=meeting-note-${note.id}.html`);
+        res.send(htmlContent);
+    } catch (error) {
+        console.error('Error exporting meeting note PDF:', error);
+        res.status(500).json({ error: 'Failed to export meeting note' });
+    }
+});
+
 export default router;

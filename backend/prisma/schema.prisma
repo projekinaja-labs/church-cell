@@ -53,3 +53,12 @@ model WeeklyReport {
 
   @@unique([memberId, weekStart])
 }
+
+model MeetingNote {
+  id        Int      @id @default(autoincrement())
+  weekDate  DateTime @unique
+  title     String
+  content   String   // Rich text content stored as HTML
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

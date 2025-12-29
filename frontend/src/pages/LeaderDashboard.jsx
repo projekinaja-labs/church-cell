@@ -4,10 +4,11 @@ import { useLanguage } from '../context/LanguageContext';
 import axios from 'axios';
 import {
     FiLogOut, FiUsers, FiCalendar, FiClock, FiPlus,
-    FiCheck, FiSave, FiChevronLeft, FiChevronRight, FiBook, FiHeart
+    FiCheck, FiSave, FiChevronLeft, FiChevronRight, FiBook, FiHeart, FiEdit3
 } from 'react-icons/fi';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import ThemeToggle from '../components/ThemeToggle';
+import MeetingNotesView from '../components/MeetingNotesView';
 
 const API_URL = '/api';
 
@@ -454,6 +455,7 @@ export default function LeaderDashboard() {
         { id: 'report', label: t('nav.weeklyReport'), icon: <FiCalendar /> },
         { id: 'members', label: t('nav.members'), icon: <FiUsers /> },
         { id: 'history', label: t('nav.history'), icon: <FiClock /> },
+        { id: 'meeting-notes', label: t('nav.meetingNotes'), icon: <FiEdit3 /> },
     ];
 
     return (
@@ -541,6 +543,8 @@ export default function LeaderDashboard() {
                             <HistoryView />
                         </div>
                     )}
+
+                    {activeTab === 'meeting-notes' && <MeetingNotesView />}
                 </main>
             </div>
 
