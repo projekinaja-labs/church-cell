@@ -44,7 +44,9 @@ model WeeklyReport {
   memberId           Int
   member             Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
   weekStart          DateTime
-  isPresent          Boolean  @default(false)
+  earlySermon        Boolean  @default(false)  // 조기예배
+  charisSermon       Boolean  @default(false)  // 카리스예배
+  cellMeeting        Boolean  @default(false)  // 셀모임
   bibleChaptersRead  Int      @default(0)
   prayerCount        Int      @default(0)
   notes              String?

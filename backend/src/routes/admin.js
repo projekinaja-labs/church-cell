@@ -306,4 +306,104 @@ router.get('/reports/summary', async (req, res) => {
     }
 });
 
+// ==================== ATTENDANCE ====================
+
+// Get all members with their attendance for a specific week
+router.get('/attendance/week/:weekStart', async (req, res) => {
+    try {
+        const { weekStart } = req.params;
+        const weekDate = new Date(weekStart);
+
+        const cellGroups = await req.prisma.cellGroup.findMany({
+            include: {
+                leader: { select: { id: true, name: true } },
+                members: {
+                    where: { isActive: true },
+                    orderBy: { name: 'asc' }
+                }
+            },
+            orderBy: { name: 'asc' }
+        });
+
+        // Get existing reports for this week
+        const existingReports = await req.prisma.weeklyReport.findMany({
+            where: { weekStart: weekDate }
+        });
+
+        // Map cell groups with member attendance
+        const groupsWithAttendance = cellGroups.map(group => ({
+            ...group,
+            members: group.members.map(member => {
+                const report = existingReports.find(r => r.memberId === member.id);
+                return {
+                    ...member,
+                    attendance: report ? {
+                        earlySermon: report.earlySermon,
+                        charisSermon: report.charisSermon,
+                        cellMeeting: report.cellMeeting
+                    } : {
+                        earlySermon: false,
+                        charisSermon: false,
+                        cellMeeting: false
+                    }
+                };
+            })
+        }));
+
+        res.json({
+            weekStart: weekDate,
+            cellGroups: groupsWithAttendance
+        });
+    } catch (error) {
+        console.error('Error fetching attendance:', error);
+        res.status(500).json({ error: 'Failed to fetch attendance' });
+    }
+});
+
+// Batch update attendance for multiple members
+router.post('/attendance/batch', async (req, res) => {
+    try {
+        const { weekStart, attendance } = req.body;
+
+        if (!weekStart || !attendance || !Array.isArray(attendance)) {
+            return res.status(400).json({ error: 'Week start and attendance array are required' });
+        }
+
+        const weekDate = new Date(weekStart);
+
+        // Upsert all attendance records
+        const results = await Promise.all(
+            attendance.map(record =>
+                req.prisma.weeklyReport.upsert({
+                    where: {
+                        memberId_weekStart: {
+                            memberId: record.memberId,
+                            weekStart: weekDate
+                        }
+                    },
+                    update: {
+                        earlySermon: record.earlySermon || false,
+                        charisSermon: record.charisSermon || false,
+                        cellMeeting: record.cellMeeting || false
+                    },
+                    create: {
+                        memberId: record.memberId,
+                        weekStart: weekDate,
+                        earlySermon: record.earlySermon || false,
+                        charisSermon: record.charisSermon || false,
+                        cellMeeting: record.cellMeeting || false,
+                        bibleChaptersRead: 0,
+                        prayerCount: 0
+                    }
+                })
+            )
+        );
+
+        res.json({ message: 'Attendance saved successfully', count: results.length });
+    } catch (error) {
+        console.error('Error saving attendance:', error);
+        res.status(500).json({ error: 'Failed to save attendance' });
+    }
+});
+
 export default router;

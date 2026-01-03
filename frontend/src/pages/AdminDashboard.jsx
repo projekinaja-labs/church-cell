@@ -4,13 +4,13 @@ import { useLanguage } from '../context/LanguageContext';
 import axios from 'axios';
 import {
     FiLogOut, FiUsers, FiGrid, FiFileText, FiDownload, FiPlus,
-    FiEdit2, FiTrash2, FiX, FiCheck, FiSearch, FiKey
+    FiEdit2, FiTrash2, FiX, FiCheck, FiSearch, FiKey,
+    FiCheckSquare, FiChevronLeft, FiChevronRight, FiCalendar, FiSave, FiEdit3
 } from 'react-icons/fi';
 import DatePickerInput from '../components/DatePickerInput';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import ThemeToggle from '../components/ThemeToggle';
 import MeetingNotesTab from '../components/MeetingNotesTab';
-import { FiEdit3 } from 'react-icons/fi';
 
 const API_URL = '/api';
 
@@ -82,7 +82,7 @@ function CellGroupsTab() {
         e.preventDefault();
         try {
             if (editingGroup) {
-                await axios.put(`${API_URL}/admin/cell-groups/${editingGroup.id}`, { name: formData.name });
+                await axios.put(`${API_URL}/admin/cell-groups /${editingGroup.id}`, { name: formData.name });
             } else {
                 await axios.post(`${API_URL}/admin/cell-groups`, formData);
             }
@@ -96,7 +96,7 @@ function CellGroupsTab() {
     const handleDelete = async (id) => {
         if (!confirm('Are you sure? This will delete the cell group, leader, and all members.')) return;
         try {
-            await axios.delete(`${API_URL}/admin/cell-groups/${id}`);
+            await axios.delete(`${API_URL}/admin/cell-groups /${id} `);
             fetchCellGroups();
         } catch (error) {
             alert('Failed to delete cell group');
@@ -240,7 +240,7 @@ function MembersTab() {
     const fetchData = async () => {
         try {
             const [membersRes, groupsRes] = await Promise.all([
-                axios.get(`${API_URL}/admin/members${filterCellGroup ? `?cellGroupId=${filterCellGroup}` : ''}`),
+                axios.get(`${API_URL}/admin/members${filterCellGroup ? `?cellGroupId=${filterCellGroup}` : ''} `),
                 axios.get(`${API_URL}/admin/cell-groups`)
             ]);
             setMembers(membersRes.data);
@@ -256,7 +256,7 @@ function MembersTab() {
         e.preventDefault();
         try {
             if (editingMember) {
-                await axios.put(`${API_URL}/admin/members/${editingMember.id}`, formData);
+                await axios.put(`${API_URL}/admin/members /${editingMember.id}`, formData);
             } else {
                 await axios.post(`${API_URL}/admin/members`, formData);
             }
@@ -270,7 +270,7 @@ function MembersTab() {
     const handleDelete = async (id) => {
         if (!confirm('Are you sure you want to delete this member?')) return;
         try {
-            await axios.delete(`${API_URL}/admin/members/${id}`);
+            await axios.delete(`${API_URL}/admin/members /${id} `);
             fetchData();
         } catch (error) {
             alert('Failed to delete member');
@@ -279,7 +279,7 @@ function MembersTab() {
 
     const toggleActive = async (member) => {
         try {
-            await axios.put(`${API_URL}/admin/members/${member.id}`, { isActive: !member.isActive });
+            await axios.put(`${API_URL}/admin/members /${member.id}`, { isActive: !member.isActive });
             fetchData();
         } catch (error) {
             alert('Failed to update member');
@@ -350,7 +350,7 @@ function MembersTab() {
                                     <td>{member.name}</td>
                                     <td>{member.cellGroup?.name}</td>
                                     <td>
-                                        <span className={`badge ${member.isActive ? 'badge-success' : 'badge-danger'}`}>
+                                        <span className={`badge ${member.isActive ? 'badge-success' : 'badge-danger'} `}>
                                             {member.isActive ? t('common.active') : t('common.inactive')}
                                         </span>
                                     </td>
@@ -426,9 +426,9 @@ function ReportsTab() {
 
     const fetchData = async () => {
         try {
-            let url = `${API_URL}/admin/reports?`;
-            if (filterCellGroup) url += `cellGroupId=${filterCellGroup}&`;
-            if (filterWeek) url += `weekStart=${filterWeek}`;
+            let url = `${API_URL}/admin/reports ?`;
+            if (filterCellGroup) url += `cellGroupId = ${filterCellGroup}& `;
+            if (filterWeek) url += `weekStart = ${filterWeek} `;
 
             const [reportsRes, groupsRes] = await Promise.all([
                 axios.get(url),
@@ -495,7 +495,9 @@ function ReportsTab() {
                                     <tr>
                                         <th>{t('table.cellGroup')}</th>
                                         <th>{t('reports.member')}</th>
-                                        <th>{t('common.present')}</th>
+                                        <th style={{ textAlign: 'center' }}>{t('attendance.earlySermon')}</th>
+                                        <th style={{ textAlign: 'center' }}>{t('attendance.charisSermon')}</th>
+                                        <th style={{ textAlign: 'center' }}>{t('attendance.cellMeeting')}</th>
                                         <th>{t('reports.bibleChapters')}</th>
                                         <th>{t('reports.prayers')}</th>
                                         <th style={{ minWidth: '200px' }}>{t('reports.notes')}</th>
@@ -506,9 +508,19 @@ function ReportsTab() {
                                         <tr key={report.id}>
                                             <td>{report.member?.cellGroup?.name}</td>
                                             <td>{report.member?.name}</td>
-                                            <td>
-                                                <span className={`badge ${report.isPresent ? 'badge-success' : 'badge-danger'}`}>
-                                                    {report.isPresent ? t('common.yes') : t('common.no')}
+                                            <td style={{ textAlign: 'center' }}>
+                                                <span className={`badge ${report.earlySermon ? 'badge-success' : 'badge-danger'}`}>
+                                                    {report.earlySermon ? '✓' : '-'}
+                                                </span>
+                                            </td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <span className={`badge ${report.charisSermon ? 'badge-success' : 'badge-danger'}`}>
+                                                    {report.charisSermon ? '✓' : '-'}
+                                                </span>
+                                            </td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <span className={`badge ${report.cellMeeting ? 'badge-success' : 'badge-danger'}`}>
+                                                    {report.cellMeeting ? '✓' : '-'}
                                                 </span>
                                             </td>
                                             <td>{report.bibleChaptersRead}</td>
@@ -549,9 +561,9 @@ function ExportTab() {
         setExporting(true);
         try {
             let url = `${API_URL}/export/${format}?`;
-            if (filters.cellGroupId) url += `cellGroupId=${filters.cellGroupId}&`;
-            if (filters.weekStart) url += `weekStart=${filters.weekStart}&`;
-            if (filters.weekEnd) url += `weekEnd=${filters.weekEnd}`;
+            if (filters.cellGroupId) url += `cellGroupId = ${filters.cellGroupId}& `;
+            if (filters.weekStart) url += `weekStart = ${filters.weekStart}& `;
+            if (filters.weekEnd) url += `weekEnd = ${filters.weekEnd} `;
 
             const response = await axios.get(url, { responseType: 'blob' });
 
@@ -559,7 +571,7 @@ function ExportTab() {
             const downloadUrl = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = downloadUrl;
-            link.download = `cell-group-reports.${format === 'excel' ? 'xlsx' : 'csv'}`;
+            link.download = `cell - group - reports.${format === 'excel' ? 'xlsx' : 'csv'} `;
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -574,9 +586,9 @@ function ExportTab() {
     const handleExportSummary = async () => {
         setExporting(true);
         try {
-            let url = `${API_URL}/export/summary?`;
-            if (filters.weekStart) url += `weekStart=${filters.weekStart}&`;
-            if (filters.weekEnd) url += `weekEnd=${filters.weekEnd}`;
+            let url = `${API_URL}/export/summary ?`;
+            if (filters.weekStart) url += `weekStart = ${filters.weekStart}& `;
+            if (filters.weekEnd) url += `weekEnd = ${filters.weekEnd} `;
 
             const response = await axios.get(url, { responseType: 'blob' });
 
@@ -713,7 +725,7 @@ function CredentialsTab() {
             if (formData.cellId) updateData.cellId = formData.cellId;
             if (formData.password) updateData.password = formData.password;
 
-            await axios.put(`${API_URL}/admin/leaders/${editingLeader.id}`, updateData);
+            await axios.put(`${API_URL}/admin/leaders /${editingLeader.id}`, updateData);
             fetchData();
             closeModal();
             alert('Credentials updated successfully');
@@ -809,6 +821,237 @@ function CredentialsTab() {
     );
 }
 
+// ==================== ATTENDANCE TAB ====================
+
+// Get the Sunday (end) of the current week
+function getWeekStart(date) {
+    const d = new Date(date);
+    d.setHours(12, 0, 0, 0);
+    const day = d.getDay();
+    const daysToSunday = day === 0 ? 0 : 7 - day;
+    d.setDate(d.getDate() + daysToSunday);
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
+
+function formatWeekRange(weekEnd) {
+    const end = new Date(weekEnd);
+    end.setHours(12, 0, 0, 0);
+    const start = new Date(end);
+    start.setDate(start.getDate() - 6);
+    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+}
+
+function formatDateForAPI(date) {
+    const d = new Date(date);
+    d.setHours(12, 0, 0, 0);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function AttendanceTab() {
+    const { t } = useLanguage();
+    const [weekStart, setWeekStart] = useState(getWeekStart(new Date()));
+    const [cellGroups, setCellGroups] = useState([]);
+    const [attendance, setAttendance] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
+
+    useEffect(() => {
+        fetchAttendance();
+    }, [weekStart]);
+
+    const fetchAttendance = async () => {
+        setLoading(true);
+        setSaved(false);
+        try {
+            const response = await axios.get(`${API_URL}/admin/attendance/week/${formatDateForAPI(weekStart)}`);
+            setCellGroups(response.data.cellGroups);
+
+            // Initialize attendance state
+            const initialAttendance = {};
+            response.data.cellGroups.forEach(group => {
+                group.members.forEach(member => {
+                    initialAttendance[member.id] = member.attendance || {
+                        earlySermon: false,
+                        charisSermon: false,
+                        cellMeeting: false
+                    };
+                });
+            });
+            setAttendance(initialAttendance);
+        } catch (error) {
+            console.error('Error fetching attendance:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAttendanceChange = (memberId, field, value) => {
+        setSaved(false);
+        setAttendance(prev => ({
+            ...prev,
+            [memberId]: {
+                ...prev[memberId],
+                [field]: value
+            }
+        }));
+    };
+
+    const handleSubmit = async () => {
+        setSaving(true);
+        try {
+            const attendanceArray = Object.entries(attendance).map(([memberId, data]) => ({
+                memberId: parseInt(memberId),
+                earlySermon: data.earlySermon || false,
+                charisSermon: data.charisSermon || false,
+                cellMeeting: data.cellMeeting || false
+            }));
+
+            await axios.post(`${API_URL}/admin/attendance/batch`, {
+                weekStart: formatDateForAPI(weekStart),
+                attendance: attendanceArray
+            });
+
+            setSaved(true);
+        } catch (error) {
+            alert('Failed to save attendance');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const navigateWeek = (direction) => {
+        const newDate = new Date(weekStart);
+        newDate.setDate(newDate.getDate() + (direction * 7));
+        setWeekStart(newDate);
+    };
+
+    if (loading) {
+        return <div className="loading-container"><div className="loading-spinner"></div></div>;
+    }
+
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-lg">
+                <h2>{t('attendance.title')}</h2>
+                <button
+                    className={`btn ${saved ? 'btn-success' : 'btn-primary'}`}
+                    onClick={handleSubmit}
+                    disabled={saving}
+                >
+                    {saving ? (
+                        <>
+                            <div className="loading-spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
+                            {t('common.saving')}
+                        </>
+                    ) : saved ? (
+                        <>
+                            <FiCheck /> {t('attendance.saved')}
+                        </>
+                    ) : (
+                        <>
+                            <FiSave /> {t('attendance.saveAttendance')}
+                        </>
+                    )}
+                </button>
+            </div>
+
+            {/* Week Navigation */}
+            <div className="card mb-lg">
+                <div className="flex justify-between items-center">
+                    <button className="btn btn-ghost" onClick={() => navigateWeek(-1)}>
+                        <FiChevronLeft /> {t('reports.previousWeek')}
+                    </button>
+                    <div className="text-center">
+                        <div className="flex items-center justify-center gap-sm mb-sm">
+                            <FiCalendar />
+                            <span className="text-muted">{t('reports.weekOf')}</span>
+                        </div>
+                        <h3>{formatWeekRange(weekStart)}</h3>
+                    </div>
+                    <button className="btn btn-ghost" onClick={() => navigateWeek(1)}>
+                        {t('reports.nextWeek')} <FiChevronRight />
+                    </button>
+                </div>
+            </div>
+
+            {/* Cell Groups with Attendance */}
+            {cellGroups.length === 0 ? (
+                <div className="empty-state">
+                    <div className="empty-state-icon">📋</div>
+                    <h3 className="empty-state-title">{t('attendance.noGroups')}</h3>
+                </div>
+            ) : (
+                cellGroups.map(group => (
+                    <div key={group.id} className="card mb-lg">
+                        <div className="card-header mb-md">
+                            <h3 className="card-title">{group.name}</h3>
+                            <span className="badge badge-primary">
+                                {group.members.filter(m => attendance[m.id]?.cellMeeting).length}/{group.members.length}
+                            </span>
+                        </div>
+
+                        {group.members.length === 0 ? (
+                            <p className="text-muted">{t('members.noMembersYet')}</p>
+                        ) : (
+                            <div className="table-container">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{t('reports.member')}</th>
+                                            <th style={{ width: '80px', textAlign: 'center' }}>{t('attendance.earlySermon')}</th>
+                                            <th style={{ width: '80px', textAlign: 'center' }}>{t('attendance.charisSermon')}</th>
+                                            <th style={{ width: '80px', textAlign: 'center' }}>{t('attendance.cellMeeting')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {group.members.map(member => (
+                                            <tr key={member.id}>
+                                                <td><strong>{member.name}</strong></td>
+                                                <td style={{ textAlign: 'center' }}>
+                                                    <label className="form-checkbox" style={{ justifyContent: 'center' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={attendance[member.id]?.earlySermon || false}
+                                                            onChange={e => handleAttendanceChange(member.id, 'earlySermon', e.target.checked)}
+                                                        />
+                                                    </label>
+                                                </td>
+                                                <td style={{ textAlign: 'center' }}>
+                                                    <label className="form-checkbox" style={{ justifyContent: 'center' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={attendance[member.id]?.charisSermon || false}
+                                                            onChange={e => handleAttendanceChange(member.id, 'charisSermon', e.target.checked)}
+                                                        />
+                                                    </label>
+                                                </td>
+                                                <td style={{ textAlign: 'center' }}>
+                                                    <label className="form-checkbox" style={{ justifyContent: 'center' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={attendance[member.id]?.cellMeeting || false}
+                                                            onChange={e => handleAttendanceChange(member.id, 'cellMeeting', e.target.checked)}
+                                                        />
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                ))
+            )}
+        </div>
+    );
+}
+
 // ==================== MAIN DASHBOARD ====================
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('cell-groups');
@@ -817,6 +1060,7 @@ export default function AdminDashboard() {
     const tabs = [
         { id: 'cell-groups', label: t('nav.cellGroups'), icon: <FiGrid /> },
         { id: 'members', label: t('nav.members'), icon: <FiUsers /> },
+        { id: 'attendance', label: t('nav.attendance'), icon: <FiCheckSquare /> },
         { id: 'reports', label: t('nav.reports'), icon: <FiFileText /> },
         { id: 'meeting-notes', label: t('nav.meetingNotes'), icon: <FiEdit3 /> },
         { id: 'export', label: t('nav.export'), icon: <FiDownload /> },
@@ -827,6 +1071,7 @@ export default function AdminDashboard() {
         switch (activeTab) {
             case 'cell-groups': return <CellGroupsTab />;
             case 'members': return <MembersTab />;
+            case 'attendance': return <AttendanceTab />;
             case 'reports': return <ReportsTab />;
             case 'meeting-notes': return <MeetingNotesTab />;
             case 'export': return <ExportTab />;

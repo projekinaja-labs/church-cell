@@ -151,7 +151,9 @@ router.post('/reports/batch', async (req, res) => {
                         }
                     },
                     update: {
-                        isPresent: report.isPresent || false,
+                        earlySermon: report.earlySermon || false,
+                        charisSermon: report.charisSermon || false,
+                        cellMeeting: report.cellMeeting || false,
                         bibleChaptersRead: report.bibleChaptersRead || 0,
                         prayerCount: report.prayerCount || 0,
                         notes: report.notes || null
@@ -159,7 +161,9 @@ router.post('/reports/batch', async (req, res) => {
                     create: {
                         memberId: report.memberId,
                         weekStart: weekDate,
-                        isPresent: report.isPresent || false,
+                        earlySermon: report.earlySermon || false,
+                        charisSermon: report.charisSermon || false,
+                        cellMeeting: report.cellMeeting || false,
                         bibleChaptersRead: report.bibleChaptersRead || 0,
                         prayerCount: report.prayerCount || 0,
                         notes: report.notes || null

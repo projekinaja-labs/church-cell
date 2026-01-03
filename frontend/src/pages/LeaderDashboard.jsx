@@ -107,7 +107,9 @@ function WeeklyReportForm() {
             response.data.members.forEach(member => {
                 initialReports[member.id] = member.report || {
                     memberId: member.id,
-                    isPresent: false,
+                    earlySermon: false,
+                    charisSermon: false,
+                    cellMeeting: false,
                     bibleChaptersRead: 0,
                     prayerCount: 0,
                     notes: ''
@@ -137,7 +139,9 @@ function WeeklyReportForm() {
         try {
             const reportsArray = Object.values(reports).map(r => ({
                 memberId: r.memberId,
-                isPresent: r.isPresent,
+                earlySermon: r.earlySermon,
+                charisSermon: r.charisSermon,
+                cellMeeting: r.cellMeeting,
                 bibleChaptersRead: parseInt(r.bibleChaptersRead) || 0,
                 prayerCount: parseInt(r.prayerCount) || 0,
                 notes: r.notes
@@ -191,8 +195,8 @@ function WeeklyReportForm() {
             <div className="stats-grid">
                 <div className="stat-card">
                     <div className="stat-icon"><FiUsers /></div>
-                    <div className="stat-value">{Object.values(reports).filter(r => r.isPresent).length}</div>
-                    <div className="stat-label">{t('reports.presentThisWeek')}</div>
+                    <div className="stat-value">{Object.values(reports).filter(r => r.cellMeeting).length}</div>
+                    <div className="stat-label">{t('attendance.cellMeeting')}</div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon"><FiBook /></div>
@@ -240,13 +244,15 @@ function WeeklyReportForm() {
                     </div>
                 ) : (
                     <div className="table-container">
-                        <table className="table" style={{ minWidth: '800px' }}>
+                        <table className="table" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
                                     <th>{t('reports.member')}</th>
-                                    <th style={{ width: '100px', textAlign: 'center' }}>{t('common.present')}</th>
-                                    <th style={{ width: '140px' }}>{t('reports.bibleChapters')}</th>
-                                    <th style={{ width: '140px' }}>{t('reports.prayerCount')}</th>
+                                    <th style={{ width: '90px', textAlign: 'center' }}>{t('attendance.earlySermon')}</th>
+                                    <th style={{ width: '90px', textAlign: 'center' }}>{t('attendance.charisSermon')}</th>
+                                    <th style={{ width: '90px', textAlign: 'center' }}>{t('attendance.cellMeeting')}</th>
+                                    <th style={{ width: '120px' }}>{t('reports.bibleChapters')}</th>
+                                    <th style={{ width: '120px' }}>{t('reports.prayerCount')}</th>
                                     <th>{t('reports.notes')}</th>
                                 </tr>
                             </thead>
@@ -260,8 +266,26 @@ function WeeklyReportForm() {
                                             <label className="form-checkbox" style={{ justifyContent: 'center' }}>
                                                 <input
                                                     type="checkbox"
-                                                    checked={reports[member.id]?.isPresent || false}
-                                                    onChange={e => handleReportChange(member.id, 'isPresent', e.target.checked)}
+                                                    checked={reports[member.id]?.earlySermon || false}
+                                                    onChange={e => handleReportChange(member.id, 'earlySermon', e.target.checked)}
+                                                />
+                                            </label>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <label className="form-checkbox" style={{ justifyContent: 'center' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={reports[member.id]?.charisSermon || false}
+                                                    onChange={e => handleReportChange(member.id, 'charisSermon', e.target.checked)}
+                                                />
+                                            </label>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <label className="form-checkbox" style={{ justifyContent: 'center' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={reports[member.id]?.cellMeeting || false}
+                                                    onChange={e => handleReportChange(member.id, 'cellMeeting', e.target.checked)}
                                                 />
                                             </label>
                                         </td>
@@ -397,7 +421,9 @@ function HistoryView() {
                             <thead>
                                 <tr>
                                     <th>{t('reports.member')}</th>
-                                    <th>{t('common.present')}</th>
+                                    <th style={{ textAlign: 'center' }}>{t('attendance.earlySermon')}</th>
+                                    <th style={{ textAlign: 'center' }}>{t('attendance.charisSermon')}</th>
+                                    <th style={{ textAlign: 'center' }}>{t('attendance.cellMeeting')}</th>
                                     <th>{t('reports.bibleChapters')}</th>
                                     <th>{t('reports.prayers')}</th>
                                     <th style={{ minWidth: '200px' }}>{t('reports.notes')}</th>
@@ -407,9 +433,19 @@ function HistoryView() {
                                 {history[week].map(report => (
                                     <tr key={report.id}>
                                         <td>{report.member?.name}</td>
-                                        <td>
-                                            <span className={`badge ${report.isPresent ? 'badge-success' : 'badge-danger'}`}>
-                                                {report.isPresent ? t('common.yes') : t('common.no')}
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span className={`badge ${report.earlySermon ? 'badge-success' : 'badge-danger'}`}>
+                                                {report.earlySermon ? '✓' : '-'}
+                                            </span>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span className={`badge ${report.charisSermon ? 'badge-success' : 'badge-danger'}`}>
+                                                {report.charisSermon ? '✓' : '-'}
+                                            </span>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span className={`badge ${report.cellMeeting ? 'badge-success' : 'badge-danger'}`}>
+                                                {report.cellMeeting ? '✓' : '-'}
                                             </span>
                                         </td>
                                         <td>{report.bibleChaptersRead}</td>

@@ -51,6 +51,7 @@ export const translations = {
             history: 'History',
             myCellGroup: 'My Cell Group',
             meetingNotes: 'Meeting Notes',
+            attendance: 'Attendance',
         },
 
         // Cell Groups
@@ -192,6 +193,17 @@ export const translations = {
             showAll: 'Show All',
             searchPlaceholder: 'Search by title or content...',
         },
+
+        // Attendance
+        attendance: {
+            title: 'Weekly Attendance',
+            earlySermon: 'Early',
+            charisSermon: 'Charis',
+            cellMeeting: 'Cell',
+            saveAttendance: 'Save Attendance',
+            saved: 'Saved!',
+            noGroups: 'No cell groups found',
+        },
     },
 
     ko: {
@@ -246,6 +258,7 @@ export const translations = {
             history: '기록',
             myCellGroup: '내 셀 그룹',
             meetingNotes: '모임 노트',
+            attendance: '출석',
         },
 
         // Cell Groups
@@ -386,6 +399,17 @@ export const translations = {
             filterWeek: '이 주간으로 필터',
             showAll: '전체 보기',
             searchPlaceholder: '제목 또는 내용으로 검색...',
+        },
+
+        // Attendance
+        attendance: {
+            title: '주간 출석',
+            earlySermon: '조기',
+            charisSermon: '카리스',
+            cellMeeting: '셀',
+            saveAttendance: '출석 저장',
+            saved: '저장됨!',
+            noGroups: '셀 그룹이 없습니다',
         },
     },
 };
